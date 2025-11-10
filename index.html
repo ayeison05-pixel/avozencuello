@@ -3,106 +3,304 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>A Voz en Cuello - Audios de Predicaciones</title>
+    <title>A Voz en Cuello - Predicaciones</title>
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;600;700&family=Playfair+Display:ital,wght@0,500;0,600;1,500&display=swap" rel="stylesheet">
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f0f0f0;
-            text-align: center;
-            padding: 20px;
+        :root {
+            --primary: #2e7d32;      /* Verde oscuro (iglesia, esperanza) */
+            --primary-light: #81c784;
+            --accent: #1b5e20;
+            --bg-body: #fafafa;
+            --card-bg: #ffffff;
+            --text-main: #263238;
+            --text-muted: #546e7a;
+            --shadow: 0 4px 12px rgba(0,0,0,0.08);
+            --radius: 16px;
+        }
+
+        * {
             margin: 0;
-            color: #333;
+            padding: 0;
+            box-sizing: border-box;
         }
-        h1, h2 { color: #333; }
-        button, input {
-            padding: 10px;
-            font-size: 16px;
-            margin: 10px;
-            border-radius: 5px;
+
+        body {
+            font-family: 'Quicksand', sans-serif;
+            background: linear-gradient(135deg, #f5f9f5, #e8f5e9);
+            color: var(--text-main);
+            padding: 16px;
+            min-height: 100vh;
         }
-        #megaAudios, #audioList {
-            margin-top: 20px;
-            text-align: left;
-            display: inline-block;
-            width: 100%;
-            max-width: 400px;
-        }
-        audio {
-            width: 100%;
-            max-width: 300px;
-            margin: 5px 0;
-        }
-        .audio-item {
-            margin-bottom: 15px;
-            padding: 10px;
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
+
         header {
-            margin-bottom: 20px;
+            text-align: center;
+            margin-bottom: 28px;
+            padding: 12px 0;
+        }
+
+        h1 {
+            font-family: 'Playfair Display', serif;
+            font-weight: 700;
+            font-size: 2.4rem;
+            color: var(--primary);
+            margin-bottom: 8px;
+            letter-spacing: -0.5px;
+        }
+
+        h1 span {
+            color: var(--accent);
+            display: block;
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            color: var(--text-muted);
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.5;
+        }
+
+        .section-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.6rem;
+            color: var(--accent);
+            margin: 32px 0 20px;
+            text-align: center;
+            position: relative;
+        }
+
+        .section-title::after {
+            content: '';
+            display: block;
+            width: 60px;
+            height: 4px;
+            background: var(--primary-light);
+            margin: 8px auto;
+            border-radius: 2px;
+        }
+
+        .audio-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .audio-card {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .audio-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+        }
+
+        .audio-header {
+            padding: 20px;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            color: white;
+        }
+
+        .preacher {
+            font-weight: 700;
+            font-size: 1.3rem;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .preacher::before {
+            content: "🎙️";
+            font-size: 1.1rem;
+        }
+
+        .title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.4rem;
+            font-weight: 600;
+            line-height: 1.4;
+            margin-bottom: 10px;
+        }
+
+        .reference {
+            font-size: 1rem;
+            opacity: 0.9;
+            font-style: italic;
+        }
+
+        .audio-player {
+            padding: 20px;
+            background: #f9fdf9;
+        }
+
+        .custom-audio {
+            width: 100%;
+            height: 56px;
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+            border: 1px solid #e0e0e0;
+        }
+
+        .custom-audio audio {
+            width: 100%;
+            height: 100%;
+            outline: none;
+        }
+
+        /* Estilo personalizado para el control de audio (Webkit) */
+        .custom-audio audio::-webkit-media-controls-panel {
+            background: white;
+        }
+        .custom-audio audio::-webkit-media-controls-current-time-display,
+        .custom-audio audio::-webkit-media-controls-time-remaining-display {
+            color: var(--accent);
+            font-weight: 600;
+        }
+        .custom-audio audio::-webkit-media-controls-play-button {
+            color: var(--primary);
+        }
+
+        /* Mensaje alternativo (responsive) */
+        .fallback-link {
+            display: block;
+            margin-top: 10px;
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        .fallback-link:hover {
+            text-decoration: underline;
+        }
+
+        /* Botones (para subida futura o WhatsApp) */
+        .actions {
+            text-align: center;
+            margin-top: 24px;
+        }
+
+        .btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 14px 28px;
+            font-family: 'Quicksand', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 10px rgba(46, 125, 50, 0.3);
+        }
+
+        .btn:hover {
+            background: var(--accent);
+            transform: scale(1.03);
+        }
+
+        .btn.whatsapp {
+            background: #25D366;
+            margin-top: 12px;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            padding: 20px;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 480px) {
+            h1 { font-size: 2rem; }
+            .title { font-size: 1.25rem; }
+            .preacher { font-size: 1.15rem; }
+            .audio-player { padding: 16px; }
         }
     </style>
 </head>
 <body>
     <header>
-        <h1>¡A Voz en Cuello!</h1>
-        <p>Audios de predicaciones de la iglesia cristiana Alfa y Omega.</p>
+        <h1>A Voz en Cuello<span>🔊 Palabra en Acción</span></h1>
+        <p class="subtitle">Audios de predicaciones de la iglesia cristiana <strong>Alfa y Omega</strong></p>
     </header>
-    
-    <!-- Sección de audios fijos del repositorio -->
-    <h2>Predicaciones Disponibles</h2>
-    <div id="megaAudios">
-        <div class="audio-item">
-            <p><strong>Audio 1</strong></p>
-            <audio controls>
-                <source src="audio-1.mp3" type="audio/mpeg">
-                Tu navegador no soporta audio. <a href="audio-1.mp3">Descarga el audio aquí</a>.
-            </audio>
+
+    <h2 class="section-title">Predicaciones Destacadas</h2>
+
+    <div class="audio-grid">
+        <!-- Audio 1 -->
+        <div class="audio-card">
+            <div class="audio-header">
+                <div class="preacher">Ps. Luis Sánchez</div>
+                <div class="title">Y ellos lo hicieron así</div>
+                <div class="reference">Éxodo 13:17–22 y 14:1–4</div>
+            </div>
+            <div class="audio-player">
+                <div class="custom-audio">
+                    <audio controls>
+                        <source src="audio-1.mp3" type="audio/mpeg">
+                        Tu navegador no soporta el reproductor.
+                    </audio>
+                </div>
+                <a href="audio-1.mp3" class="fallback-link" download>🔽 Descargar (MP3, 128 kbps)</a>
+            </div>
         </div>
-        <div class="audio-item">
-            <p><strong>Audio 2</strong></p>
-            <audio controls>
-                <source src="audio-2.mp3" type="audio/mpeg">
-                Tu navegador no soporta audio. <a href="audio-2.mp3">Descarga el audio aquí</a>.
-            </audio>
+
+        <!-- Audio 2 -->
+        <div class="audio-card">
+            <div class="audio-header">
+                <div class="preacher">Ps. Yeixon Hernández</div>
+                <div class="title">No vivamos de apariencias</div>
+                <div class="reference">Apocalipsis 3:1</div>
+            </div>
+            <div class="audio-player">
+                <div class="custom-audio">
+                    <audio controls>
+                        <source src="audio-2.mp3" type="audio/mpeg">
+                        Tu navegador no soporta el reproductor.
+                    </audio>
+                </div>
+                <a href="audio-2.mp3" class="fallback-link" download>🔽 Descargar (MP3, 128 kbps)</a>
+            </div>
         </div>
     </div>
-    
-    <!-- Input para subir audios locales (opcional, para pruebas) -->
-    <h2>Sube un audio adicional</h2>
-    <input type="file" id="audioInput" accept="audio/*" multiple>
-    <button onclick="clearAudios()">Limpiar Lista</button>
-    
-    <!-- Lista donde aparecerán los audios subidos -->
-    <div id="audioList"></div>
+
+    <div class="actions">
+        <button class="btn">
+            📥 Subir nueva predicación
+        </button>
+        <button class="btn whatsapp">
+            📲 Compartir por WhatsApp
+        </button>
+    </div>
+
+    <footer>
+        <p>© 2025 Iglesia Alfa y Omega — “La fe viene por el oír” (Rom. 10:17)</p>
+    </footer>
 
     <script>
-        const audioInput = document.getElementById('audioInput');
-        const audioList = document.getElementById('audioList');
-
-        // Cuando subes audios locales
-        audioInput.addEventListener('change', (event) => {
-            const files = event.target.files;
-            for (let file of files) {
-                const audioURL = URL.createObjectURL(file);
-                const audioElement = document.createElement('audio');
-                audioElement.controls = true;
-                audioElement.src = audioURL;
-                
-                const audioContainer = document.createElement('div');
-                audioContainer.className = 'audio-item';
-                audioContainer.innerHTML = `<p><strong>${file.name}</strong></p>`;
-                audioContainer.appendChild(audioElement);
-                audioList.appendChild(audioContainer);
-            }
+        // Funcionalidad básica para WhatsApp (ejemplo con mensaje predefinido)
+        document.querySelector('.btn.whatsapp').addEventListener('click', () => {
+            const mensaje = encodeURIComponent(
+                "🎧 Predicaciones de *A Voz en Cuello*:\n" +
+                "✅ Ps. Luis Sánchez: _Y ellos lo hicieron así_ (Éx 13–14)\n" +
+                "✅ Ps. Yeixon Hernández: _No vivamos de apariencias_ (Ap 3:1)\n\n" +
+                "Escúchalas aquí: [enlace futuro]"
+            );
+            window.open(`https://wa.me/?text=${mensaje}`, '_blank');
         });
-
-        // Función para limpiar la lista de audios subidos
-        function clearAudios() {
-            audioList.innerHTML = '';
-            audioInput.value = '';
-        }
     </script>
 </body>
 </html>
