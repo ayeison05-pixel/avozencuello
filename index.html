@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A Voz en Cuello - Audios de Predicaciones</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            text-align: center;
+            padding: 20px;
+            margin: 0;
+            color: #333;
+        }
+        h1, h2 { color: #333; }
+        button, input {
+            padding: 10px;
+            font-size: 16px;
+            margin: 10px;
+            border-radius: 5px;
+        }
+        #megaAudios, #audioList {
+            margin-top: 20px;
+            text-align: left;
+            display: inline-block;
+            width: 100%;
+            max-width: 400px;
+        }
+        audio {
+            width: 100%;
+            max-width: 300px;
+            margin: 5px 0;
+        }
+        .audio-item {
+            margin-bottom: 15px;
+            padding: 10px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        header {
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>¡A Voz en Cuello!</h1>
+        <p>Audios de predicaciones de la iglesia cristiana Alfa y Omega.</p>
+    </header>
+    
+    <!-- Sección de audios fijos del repositorio -->
+    <h2>Predicaciones Disponibles</h2>
+    <div id="megaAudios">
+        <div class="audio-item">
+            <p><strong>Audio 1</strong></p>
+            <audio controls>
+                <source src="audio-1.mp3" type="audio/mpeg">
+                Tu navegador no soporta audio. <a href="audio-1.mp3">Descarga el audio aquí</a>.
+            </audio>
+        </div>
+        <div class="audio-item">
+            <p><strong>Audio 2</strong></p>
+            <audio controls>
+                <source src="audio-2.mp3" type="audio/mpeg">
+                Tu navegador no soporta audio. <a href="audio-2.mp3">Descarga el audio aquí</a>.
+            </audio>
+        </div>
+    </div>
+    
+    <!-- Input para subir audios locales (opcional, para pruebas) -->
+    <h2>Sube un audio adicional</h2>
+    <input type="file" id="audioInput" accept="audio/*" multiple>
+    <button onclick="clearAudios()">Limpiar Lista</button>
+    
+    <!-- Lista donde aparecerán los audios subidos -->
+    <div id="audioList"></div>
+
+    <script>
+        const audioInput = document.getElementById('audioInput');
+        const audioList = document.getElementById('audioList');
+
+        // Cuando subes audios locales
+        audioInput.addEventListener('change', (event) => {
+            const files = event.target.files;
+            for (let file of files) {
+                const audioURL = URL.createObjectURL(file);
+                const audioElement = document.createElement('audio');
+                audioElement.controls = true;
+                audioElement.src = audioURL;
+                
+                const audioContainer = document.createElement('div');
+                audioContainer.className = 'audio-item';
+                audioContainer.innerHTML = `<p><strong>${file.name}</strong></p>`;
+                audioContainer.appendChild(audioElement);
+                audioList.appendChild(audioContainer);
+            }
+        });
+
+        // Función para limpiar la lista de audios subidos
+        function clearAudios() {
+            audioList.innerHTML = '';
+            audioInput.value = '';
+        }
+    </script>
+</body>
+</html>
