@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A Voz en Cuello</title>
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-dark: #1A0020;
+            --primary-light: #EAEAEA;
+            --accent: #6A2C70;
+            --accent-light: #B39DDB;
+            --bg-light: #FCFAFF;
+            --bg-dark: #120018;
+            --text-light: #FFFFFF;
+            --text-dark: #261A30;
+            --shadow-light: 0 1px 4px rgba(0,0,0,0.05);
+            --shadow-dark: 0 1px 4px rgba(0,0,0,0.2);
+            --radius: 12px;
+        }
+
+        [data-theme="dark"] {
+            --bg-body: var(--bg-dark);
+            --card-bg: #200030;
+            --text-main: var(--text-light);
+            --text-muted: #C5C5C5;
+            --shadow: var(--shadow-dark);
+        }
+
+        [data-theme="light"] {
+            --bg-body: var(--bg-light);
+            --card-bg: #FFFFFF;
+            --text-main: var(--text-dark);
+            --text-muted: #5E4060;
+            --shadow: var(--shadow-light);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            transition: background 0.3s ease, color 0.3s ease;
+        }
+
+        body {
+            font-family: 'Quicksand', sans-serif;
+            background: var(--bg-body);
+            color: var(--text-main);
+            padding: 14px 10px;
+            min-height: 100vh;
+            line-height: 1.4;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 20px;
+            padding: 12px 0;
+        }
+
+        .logo-container {
+            width: 100%;
+            max-width: 160px;
+            margin: 0 auto 14px;
+        }
+
+        .logo {
+            width: 100%;
+            height: auto;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            font-family: 'Playfair Display', serif;
+            font-weight: 700;
+            font-size: 1.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--accent);
+            margin-bottom: 4px;
+        }
+
+        .verse {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.05rem;
+            font-weight: 600;
+            color: var(--accent-light);
+            opacity: 0.9;
+        }
+
+        /* Toggle */
+        .toggle-btn {
+            background: var(--accent);
+            color: white;
+            font-family: 'Quicksand', sans-serif;
+            font-weight: 700;
+            font-size: 1.15rem;
+            padding: 14px 20px;
+            border: none;
+            border-radius: var(--radius);
+            cursor: pointer;
+            margin: 0 auto 18px;
+            display: block;
+            width: 94%;
+            max-width: 500px;
+            text-align: center;
+            box-shadow: 0 3px 10px rgba(106, 44, 112, 0.25);
+            transition: transform 0.2s, background 0.2s;
+        }
+
+        .toggle-btn:hover {
+            background: #5d2762;
+            transform: translateY(-2px);
+        }
+
+        .toggle-btn::after {
+            content: ' ▼';
+            font-size: 0.9rem;
+        }
+
+        .toggle-btn.active::after {
+            content: ' ▲';
+        }
+
+        /* Lista oculta/visible */
+        .sermon-list-container {
+            max-width: 540px;
+            margin: 0 auto;
+            overflow: hidden;
+            transition: max-height 0.4s ease, opacity 0.4s ease;
+        }
+
+        .sermon-list-container.hidden {
+            max-height: 0;
+            opacity: 0;
+        }
+
+        .sermon-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .sermon-item {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            padding: 10px 14px;
+            box-shadow: var(--shadow);
+            cursor: pointer;
+            transition: all 0.18s ease;
+            border-left: 2.5px solid var(--accent-light);
+            font-size: 0.95rem;
+        }
+
+        .sermon-item:hover {
+            transform: translateX(2px);
+            background: var(--accent-light);
+            color: var(--text-dark);
+        }
+
+        .preacher {
+            font-weight: 700;
+            color: var(--accent);
+            font-size: 0.98rem;
+            margin-bottom: 2px;
+        }
+
+        .sermon-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.05rem;
+            font-weight: 600;
+            line-height: 1.3;
+            color: var(--text-main);
+            margin-bottom: 1px;
+        }
+
+        .reference {
+            font-size: 0.88rem;
+            color: var(--text-muted);
+            font-style: italic;
+        }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(26, 0, 32, 0.75);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s, visibility 0.3s;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal {
+            background: var(--card-bg);
+            width: 94%;
+            max-width: 480px;
+            border-radius: 18px;
+            overflow: hidden;
+            box-shadow: 0 8px 24px rgba(26, 0, 32, 0.25);
+            transform: scale(0.97);
+            transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.3, 1.1);
+        }
+
+        .modal-overlay.active .modal {
+            transform: scale(1);
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, var(--primary-dark), var(--accent));
+            color: var(--primary-light);
+            padding: 20px 18px 16px;
+            text-align: center;
+            position: relative;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 14px;
+            right: 14px;
+            background: rgba(234, 234, 234, 0.2);
+            border: none;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            color: var(--primary-light);
+            font-size: 1.05rem;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: background 0.2s;
+        }
+
+        .close-btn:hover {
+            background: rgba(234, 234, 234, 0.35);
+        }
+
+        .modal-preacher {
+            font-weight: 700;
+            font-size: 1.15rem;
+            margin-bottom: 5px;
+        }
+
+        .modal-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.35rem;
+            margin-bottom: 5px;
+            line-height: 1.3;
+        }
+
+        .modal-reference {
+            font-size: 0.95rem;
+            opacity: 0.95;
+            font-style: italic;
+        }
+
+        .modal-body {
+            padding: 20px 18px 22px;
+        }
+
+        .player-controls {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .time-display {
+            font-family: 'Quicksand', sans-serif;
+            font-weight: 600;
+            font-size: 1.05rem;
+            text-align: center;
+            color: var(--text-main);
+        }
+
+        .progress-container {
+            width: 100%;
+            height: 5px;
+            background: #e8e8e8;
+            border-radius: 2.5px;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: var(--accent);
+            border-radius: 2.5px;
+            width: 0%;
+            transition: width 0.1s linear;
+        }
+
+        .buttons-row {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .control-btn {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: var(--accent-light);
+            border: none;
+            color: var(--text-dark);
+            font-size: 1.25rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 2px 5px rgba(106, 44, 112, 0.25);
+        }
+
+        .control-btn:hover {
+            background: var(--accent);
+            color: white;
+            transform: scale(1.06);
+        }
+
+        .control-btn.play-pause {
+            width: 56px;
+            height: 56px;
+            font-size: 1.4rem;
+            background: var(--accent);
+            color: white;
+        }
+
+        .speed-selector {
+            margin-top: 10px;
+            text-align: center;
+        }
+
+        .speed-btn {
+            background: var(--accent-light);
+            border: none;
+            padding: 5px 10px;
+            margin: 0 3px;
+            border-radius: 18px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .speed-btn.active {
+            background: var(--accent);
+            color: white;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 18px;
+            padding: 14px;
+            color: var(--text-muted);
+            font-size: 0.82rem;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo-container">
+            <img 
+                src="https://raw.githubusercontent.com/ayeison05-pixel/avozencuello/main/file_00000000c49461fd8652d6705466cd34.png" 
+                alt="Logo A Voz en Cuello" 
+                class="logo"
+            >
+        </div>
+        <h1>A VOZ EN CUELLO</h1>
+        <div class="verse">ISAÍAS 58:1</div>
+    </header>
+
+    <button class="toggle-btn" id="toggleBtn">Predicaciones Alfa y Omega</button>
+
+    <div class="sermon-list-container hidden" id="sermonContainer">
+        <ul class="sermon-list">
+            <!-- audio-1.mp3 -->
+            <li class="sermon-item" 
+                data-src="audio-1.mp3"
+                data-preacher="Ps. Luis Sánchez"
+                data-title="Y ellos lo hicieron así"
+                data-ref="Éxodo 13:17–22 y 14:1–4">
+                <div class="preacher">Ps. Luis Sánchez</div>
+                <div class="sermon-title">Y ellos lo hicieron así</div>
+                <div class="reference">Éxodo 13:17–22 y 14:1–4</div>
+            </li>
+
+            <!-- audio-2.mp3 -->
+            <li class="sermon-item" 
+                data-src="audio-2.mp3"
+                data-preacher="Ps. Yeixon Hernández"
+                data-title="No vivamos de apariencias"
+                data-ref="Apocalipsis 3:1">
+                <div class="preacher">Ps. Yeixon Hernández</div>
+                <div class="sermon-title">No vivamos de apariencias</div>
+                <div class="reference">Apocalipsis 3:1</div>
+            </li>
+
+            <!-- audio-ed.mp3 -->
+            <li class="sermon-item" 
+                data-src="audio-ed.mp3"
+                data-preacher="Ps. Edinson Bautista"
+                data-title="Sembrando con lágrimas para segar con regocijo"
+                data-ref="Salmos 126">
+                <div class="preacher">Ps. Edinson Bautista</div>
+                <div class="sermon-title">Sembrando con lágrimas para segar con regocijo</div>
+                <div class="reference">Salmos 126</div>
+            </li>
+
+            <!-- audio-lu.mp3 -->
+            <li class="sermon-item" 
+                data-src="audio-lu.mp3"
+                data-preacher="Ps. Luis Sánchez"
+                data-title="Conservando nuestro linaje"
+                data-ref="Daniel 1">
+                <div class="preacher">Ps. Luis Sánchez</div>
+                <div class="sermon-title">Conservando nuestro linaje</div>
+                <div class="reference">Daniel 1</div>
+            </li>
+
+            <!-- audio-mar.mp3 -->
+            <li class="sermon-item" 
+                data-src="audio-mar.mp3"
+                data-preacher="Ps. Mari Franco"
+                data-title="Somos el pueblo de Dios"
+                data-ref="Deuteronomio 7:6">
+                <div class="preacher">Ps. Mari Franco</div>
+                <div class="sermon-title">Somos el pueblo de Dios</div>
+                <div class="reference">Deuteronomio 7:6</div>
+            </li>
+
+            <!-- audio-mar2.m4a -->
+            <li class="sermon-item" 
+                data-src="audio-mar2.m4a"
+                data-preacher="Ps. Mari Franco"
+                data-title="No seas incrédulo sino creyente"
+                data-ref="Juan 20:24–29">
+                <div class="preacher">Ps. Mari Franco</div>
+                <div class="sermon-title">No seas incrédulo sino creyente</div>
+                <div class="reference">Juan 20:24–29</div>
+            </li>
+
+            <!-- audio-lu2.m4a -->
+            <li class="sermon-item" 
+                data-src="audio-lu2.m4a"
+                data-preacher="Ps. Luis Sanchez"
+                data-title="Cortando con lo inservible"
+                data-ref="">
+                <div class="preacher">Ps. Luis Sanchez</div>
+                <div class="sermon-title">Cortando con lo inservible</div>
+                <div class="reference"></div>
+            </li>
+        </ul>
+    </div>
+
+    <!-- Modal único -->
+    <div class="modal-overlay" id="modal">
+        <div class="modal">
+            <div class="modal-header">
+                <button class="close-btn" id="closeModal">&times;</button>
+                <div class="modal-preacher" id="modalPreacher">Ps. Nombre</div>
+                <div class="modal-title" id="modalTitle">Título</div>
+                <div class="modal-reference" id="modalRef">Referencia</div>
+            </div>
+            <div class="modal-body">
+                <div class="player-controls">
+                    <div class="time-display">
+                        <span id="currentTime">00:00</span> / <span id="duration">00:00</span>
+                    </div>
+                    <div class="progress-container" id="progressContainer">
+                        <div class="progress-bar" id="progressBar"></div>
+                    </div>
+                    <div class="buttons-row">
+                        <button class="control-btn" id="rewind">⏪</button>
+                        <button class="control-btn play-pause" id="playPause">▶️</button>
+                        <button class="control-btn" id="forward">⏩</button>
+                    </div>
+                    <div class="speed-selector">
+                        <button class="speed-btn active" data-speed="1">1x</button>
+                        <button class="speed-btn" data-speed="1.25">1.25x</button>
+                        <button class="speed-btn" data-speed="1.5">1.5x</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <audio id="audioPlayer"></audio>
+
+    <footer>
+        <p>“Clama a voz en cuello, no te detengas”</p>
+    </footer>
+
+    <script>
+        // Modo oscuro automático
+        const prefersDark = window.matchMedia("(prefers-color-scheme: dark)");
+        const setTheme = (isDark) => {
+            document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
+        };
+        setTheme(prefersDark.matches);
+        prefersDark.addEventListener('change', e => setTheme(e.matches));
+
+        // Toggle
+        const toggleBtn = document.getElementById('toggleBtn');
+        const container = document.getElementById('sermonContainer');
+
+        toggleBtn.addEventListener('click', () => {
+            container.classList.toggle('hidden');
+            toggleBtn.classList.toggle('active');
+        });
+
+        // Modal y reproductor
+        const modal = document.getElementById('modal');
+        const closeModalBtn = document.getElementById('closeModal');
+        const playPauseBtn = document.getElementById('playPause');
+        const rewindBtn = document.getElementById('rewind');
+        const forwardBtn = document.getElementById('forward');
+        const progressContainer = document.getElementById('progressContainer');
+        const progressBar = document.getElementById('progressBar');
+        const currentTimeEl = document.getElementById('currentTime');
+        const durationEl = document.getElementById('duration');
+        const audio = document.getElementById('audioPlayer');
+        const speedButtons = document.querySelectorAll('.speed-btn');
+
+        document.querySelectorAll('.sermon-item').forEach(item => {
+            item.addEventListener('click', () => {
+                const { src, preacher, title, ref } = item.dataset;
+                document.getElementById('modalPreacher').textContent = preacher;
+                document.getElementById('modalTitle').textContent = title;
+                document.getElementById('modalRef').textContent = ref || '—';
+
+                audio.src = src;
+                audio.load();
+                modal.classList.add('active');
+                playPauseBtn.textContent = '▶️';
+                audio.playbackRate = 1;
+                speedButtons.forEach(btn => btn.classList.remove('active'));
+                speedButtons[0].classList.add('active');
+            });
+        });
+
+        [closeModalBtn, modal].forEach(el => {
+            el.addEventListener('click', (e) => {
+                if (e.target === modal || e.target === closeModalBtn) {
+                    modal.classList.remove('active');
+                    audio.pause();
+                }
+            });
+        });
+
+        playPauseBtn.addEventListener('click', () => {
+            audio.paused ? (audio.play(), playPauseBtn.textContent = '⏸️') 
+                         : (audio.pause(), playPauseBtn.textContent = '▶️');
+        });
+
+        rewindBtn.addEventListener('click', () => audio.currentTime = Math.max(0, audio.currentTime - 10));
+        forwardBtn.addEventListener('click', () => audio.currentTime = Math.min(audio.duration || 0, audio.currentTime + 10));
+
+        audio.addEventListener('loadedmetadata', () => durationEl.textContent = formatTime(audio.duration));
+        audio.addEventListener('timeupdate', () => {
+            const pct = (audio.currentTime / (audio.duration || 1)) * 100;
+            progressBar.style.width = `${pct}%`;
+            currentTimeEl.textContent = formatTime(audio.currentTime);
+        });
+
+        progressContainer.addEventListener('click', (e) => {
+            const rect = progressContainer.getBoundingClientRect();
+            const pct = (e.clientX - rect.left) / rect.width;
+            audio.currentTime = pct * (audio.duration || 0);
+        });
+
+        speedButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const speed = parseFloat(btn.dataset.speed);
+                audio.playbackRate = speed;
+                speedButtons.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+            });
+        });
+
+        function formatTime(s) {
+            const m = Math.floor(s / 60);
+            const ss = Math.floor(s % 60);
+            return `${m.toString().padStart(2, '0')}:${ss.toString().padStart(2, '0')}`;
+        }
+
+        audio.addEventListener('ended', () => playPauseBtn.textContent = '▶️');
+    </script>
+</body>
+              </html>
